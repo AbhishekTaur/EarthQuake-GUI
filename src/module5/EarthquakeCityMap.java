@@ -36,7 +36,7 @@ public class EarthquakeCityMap extends PApplet {
 	private static final long serialVersionUID = 1L;
 
 	// IF YOU ARE WORKING OFFILINE, change the value of this variable to true
-	private static final boolean offline = true;
+	private static final boolean offline = false;
 	
 	/** This is where to find the local tiles, for working without an Internet connection */
 	public static String mbTilesString = "blankLight-1-3.mbtiles";
@@ -176,31 +176,65 @@ public class EarthquakeCityMap extends PApplet {
 			unhideMarkers();
 			lastClicked = null;
 			return;
-		} else{
-			EarthquakeMarker m = (EarthquakeMarker)quakeMarkers.get(0);
-			double threat = m.threatCircle();
-			
-			for(Marker marker : quakeMarkers) {
-				if(!marker.isSelected())
-					marker.setHidden(true);
-				else
-					lastClicked = (CommonMarker) marker;
+		} else if(lastClicked == null){
+			checkForEarthQuakeClicks();
+			if (lastClicked == null) {
+				checkCitiesForClick();
 			}
-			for(Marker marker : cityMarkers) {
-				if(!marker.isSelected())
-					marker.setHidden(true);
-				else
-					lastClicked = (CommonMarker) marker;
-				for(Marker mark : quakeMarkers){
-					System.out.println();
-				}
-			}
-			
-			return;
 		}
 	}
 	
 	
+	private void checkCitiesForClick() {
+		// TODO Auto-generated method stub
+		for(Marker m : cityMarkers){
+			CityMarker marker = (CityMarker) m;
+			if(!m.isHidden() && m.isInside(map, mouseX, mouseY)){
+				lastClicked = marker;
+				
+				for(Marker mhide : cityMarkers){
+					if(mhide != lastClicked){
+						mhide.setHidden(true);
+					}
+				}
+				
+				for(Marker mhide : quakeMarkers){
+					EarthquakeMarker eqMarker = (EarthquakeMarker) mhide;
+					if(eqMarker.getDistanceTo(m.getLocation()) > eqMarker.threatCircle()){
+						mhide.setHidden(true);
+					}
+				}
+			}
+		}
+		return;
+	}
+
+
+	private void checkForEarthQuakeClicks() {
+		// TODO Auto-generated method stub
+		for(Marker m : quakeMarkers){
+			EarthquakeMarker marker = (EarthquakeMarker) m;
+			if(!m.isHidden() && m.isInside(map, mouseX, mouseY)){
+				lastClicked = marker;
+				
+				for (Marker mhide : quakeMarkers) {
+					if (mhide != lastClicked) {
+						mhide.setHidden(true);
+					}
+				}
+				for (Marker mhide : cityMarkers) {
+					if (mhide.getDistanceTo(marker.getLocation()) 
+							> marker.threatCircle()) {
+						mhide.setHidden(true);
+					}
+				}
+			}
+		}
+		return;
+		
+	}
+
+
 	// loop over and unhide all markers
 	private void unhideMarkers() {
 		for(Marker marker : quakeMarkers) {
