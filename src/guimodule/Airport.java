@@ -16,15 +16,25 @@ public class Airport {
 	double lat;
 	double lon;
 	String location;
+	int altitude;
 	
-	public Airport(String name, String country, double lat, double lon,
+	public Airport(String name, String country, double lat, double lon,int altitude,
 			String location) {
 		super();
 		this.name = name;
 		this.country = country;
 		this.lat = lat;
 		this.lon = lon;
+		this.altitude = altitude; 
 		this.location = location;
+	}
+
+	public int getAltitude() {
+		return altitude;
+	}
+
+	public void setAltitude(int altitude) {
+		this.altitude = altitude;
 	}
 
 	public String getName() {
@@ -96,13 +106,15 @@ public class Airport {
 					//System.out.println(airport[i]);
 				}
 				
-				Airport a = new Airport(airport[1], airport[3], Double.parseDouble(airport[7]), Double.parseDouble(airport[8]), airport[11]);
+				Airport a = new Airport(airport[1], airport[3], Double.parseDouble(airport[6]), Double.parseDouble(airport[7]),Integer.parseInt(airport[8]), airport[11]);
 				airports.add(a);
 			}
 			System.out.println(toFind(airports,"Port Moresby Jacksons Intl"));
-			System.out.println("Binary serach");
 			System.out.println(toFindBinary(airports,"Wewak Intl"));
 			
+			int[] selectionSortArray = new int[10];
+			selectionSortArray = toSelectionSort(airports);
+			System.out.println(selectionSortArray[9]);
 
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -116,6 +128,41 @@ public class Airport {
 		
 	}
 	
+	private static int[] toSelectionSort(List<Airport> airports) {
+		// TODO Auto-generated method stub
+		int[] sort = new int[10];
+		List<Integer> a = new ArrayList<Integer>();
+		int k = 0;
+		for(Airport airport : airports){
+			sort[k] = airport.getAltitude();
+			a.add(airport.getAltitude());
+			k++;
+		}
+		Collections.sort(a);
+		System.out.println(a.get(0));
+		int smallest = sort[0];
+		int indexMin;
+		for(int i = 0;i < 9;i++){
+			indexMin = i;
+			for(int j = i+1; j < 10 ;j++){
+				if(sort[j] < sort[indexMin]){
+					indexMin = j;
+				}
+			}
+			swap(sort,indexMin,i);
+			
+		}
+		
+		return sort;
+	}
+
+	private static void swap(int[] sort, int indexMin, int i) {
+		// TODO Auto-generated method stub
+		int temp = sort[i];
+		sort[i] = sort[indexMin];
+		sort[indexMin] = temp;
+	}
+
 	private static boolean toFindBinary(List<Airport> airports, String name) {
 		// TODO Auto-generated method stub
 		List<String> s = new ArrayList<String>();
@@ -131,7 +178,7 @@ public class Airport {
 		while (low <= high) {
 			mid = low + ((high-low)/2);
 			int compare = name.compareTo(s.get(mid));
-			System.out.println(s.get(mid));
+			
 			if (compare < 0) {
 				high = mid - 1;
 			}
