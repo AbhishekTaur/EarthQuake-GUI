@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -99,6 +100,8 @@ public class Airport {
 				airports.add(a);
 			}
 			System.out.println(toFind(airports,"Port Moresby Jacksons Intl"));
+			System.out.println("Binary serach");
+			System.out.println(toFindBinary(airports,"Wewak Intl"));
 			
 
 		} catch (IOException e) {
@@ -113,7 +116,35 @@ public class Airport {
 		
 	}
 	
-	public static boolean toFind(List<Airport> a,String name){
+	private static boolean toFindBinary(List<Airport> airports, String name) {
+		// TODO Auto-generated method stub
+		List<String> s = new ArrayList<String>();
+		for(Airport airport: airports){
+			s.add(airport.getName());
+		}
+		
+		Collections.sort(s);
+		
+		int low = 0;
+		int high = airports.size() - 1;
+		int mid;
+		while (low <= high) {
+			mid = low + ((high-low)/2);
+			int compare = name.compareTo(s.get(mid));
+			System.out.println(s.get(mid));
+			if (compare < 0) {
+				high = mid - 1;
+			}
+			else if (compare > 0) {
+				low = mid+1;
+			}
+			else return true;
+		}
+		
+		return false;
+	}
+
+	private static boolean toFind(List<Airport> a,String name){
 		for(Airport airport: a){
 			if(airport.getName().equals(name)){
 				return true;
