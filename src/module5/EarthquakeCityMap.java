@@ -11,6 +11,7 @@ import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.marker.AbstractShapeMarker;
 import de.fhpotsdam.unfolding.marker.Marker;
 import de.fhpotsdam.unfolding.marker.MultiMarker;
+import de.fhpotsdam.unfolding.providers.EsriProvider;
 import de.fhpotsdam.unfolding.providers.Google;
 import de.fhpotsdam.unfolding.providers.MBTilesMapProvider;
 import de.fhpotsdam.unfolding.utils.MapUtils;
@@ -35,7 +36,7 @@ public class EarthquakeCityMap extends PApplet {
 	private static final long serialVersionUID = 1L;
 
 	// IF YOU ARE WORKING OFFILINE, change the value of this variable to true
-	private static final boolean offline = false;
+	private static final boolean offline = true;
 	
 	/** This is where to find the local tiles, for working without an Internet connection */
 	public static String mbTilesString = "blankLight-1-3.mbtiles";
@@ -70,7 +71,7 @@ public class EarthquakeCityMap extends PApplet {
 		    earthquakesURL = "2.5_week.atom";  // The same feed, but saved August 7, 2015
 		}
 		else {
-			map = new UnfoldingMap(this, 200, 50, 650, 600, new Google.GoogleMapProvider());
+			map = new UnfoldingMap(this, 200, 50, 650, 600, new EsriProvider.NatGeoWorldMap());
 			// IF YOU WANT TO TEST WITH A LOCAL FILE, uncomment the next line
 		    //earthquakesURL = "2.5_week.atom";
 		}
@@ -146,6 +147,18 @@ public class EarthquakeCityMap extends PApplet {
 	private void selectMarkerIfHover(List<Marker> markers)
 	{
 		// TODO: Implement this method
+		if(lastSelected!=null){
+			return;
+		}
+		for(Marker marker: markers){
+			
+			CommonMarker m = (CommonMarker) marker;
+			if(m.isInside(map, mouseX, mouseY)){
+				m.setSelected(true);
+				lastSelected = m;
+				return;
+			}
+		}
 	}
 	
 	/** The event handler for mouse clicks
@@ -159,6 +172,32 @@ public class EarthquakeCityMap extends PApplet {
 		// TODO: Implement this method
 		// Hint: You probably want a helper method or two to keep this code
 		// from getting too long/disorganized
+		if(lastClicked != null){
+			unhideMarkers();
+			lastClicked = null;
+			return;
+		} else{
+			EarthquakeMarker m = (EarthquakeMarker)quakeMarkers.get(0);
+			double threat = m.threatCircle();
+			
+			for(Marker marker : quakeMarkers) {
+				if(!marker.isSelected())
+					marker.setHidden(true);
+				else
+					lastClicked = (CommonMarker) marker;
+			}
+			for(Marker marker : cityMarkers) {
+				if(!marker.isSelected())
+					marker.setHidden(true);
+				else
+					lastClicked = (CommonMarker) marker;
+				for(Marker mark : quakeMarkers){
+					System.out.println();
+				}
+			}
+			
+			return;
+		}
 	}
 	
 	
