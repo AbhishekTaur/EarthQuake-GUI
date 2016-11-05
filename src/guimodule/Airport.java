@@ -82,7 +82,6 @@ public class Airport {
 		String airportInfo;
 		String[] airport;
 		List<Airport> airports= new ArrayList<Airport>();
-		boolean found;
 		String pattern = "(^\")((\\w)*(\\s)*)+(\")$";
 		 Pattern r = Pattern.compile(pattern);
 		
@@ -140,7 +139,6 @@ public class Airport {
 		}
 		Collections.sort(a);
 		System.out.println(a.get(0));
-		int smallest = sort[0];
 		int indexMin;
 		for(int i = 0;i < 9;i++){
 			indexMin = i;
